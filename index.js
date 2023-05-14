@@ -61,15 +61,57 @@ app.get('/service/:id', async(req, res) => {
 })
 
 // booking
-app.post('/booking', async(req, res ) => {
+
+app.get('/booking/:id', async(req, res) => {
+console.log(req.query);
+let query = {};
+if(req.query?.email){
+  query = {email: req.query.email}
+}
+  const result = await bookingCollection.find(query).toArray();
+res.send(result)
+
+})
+// add booking
+// app.post('/booking', async(req, res ) => {
+//   const user = req.body;
+//   console.log('user get', user);
+//   const results = await bookingCollection.insertOne(user);
+//   console.log('added user', results);
+//   res.send(results)
+// })
+
+// adding booked
+app.post('/booking', async(req, res) => {
   const user = req.body;
+  user._id = new ObjectId(); // Generate a new ObjectId for _id
   console.log('user get', user);
   const results = await bookingCollection.insertOne(user);
   console.log('added user', results);
-  res.send(results)
+  res.send(results);
+});
+
+
+
+
+// get data From booking
+app.get('/booking/:id', async(req, res) => {
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const user = await bookingCollection.findOne(query);
+  res.send(user)
 })
 
 
+
+// delete data mongodb
+app.delete('/booking/:id', async(req, res ) => {
+  const id = req.params.id;
+  console.log('plase delete  from database');
+  const query = {_id: new ObjectId(id)};
+  const result = await bookingCollection.deleteOne(query);
+  res.send(result)
+})
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -80,12 +122,6 @@ app.post('/booking', async(req, res ) => {
   }
 }
 run().catch(console.dir);
-
-
-
-
-
-
 
 
 
